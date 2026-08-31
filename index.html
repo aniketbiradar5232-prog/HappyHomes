@@ -462,15 +462,15 @@
 
       // Paste Firebase Console > Project settings > General > Your apps > Web app values here.
       const firebaseConfig = {
-      apiKey: "AIzaSyCffyHOnYfzlJXuk3ZXNUSeHYRMp1i1mE8",
-      authDomain: "happyhomes-c8bed.firebaseapp.com",
-      databaseURL: "https://happyhomes-c8bed-default-rtdb.firebaseio.com",
-      projectId: "happyhomes-c8bed",
-      storageBucket: "happyhomes-c8bed.firebasestorage.app",
-      messagingSenderId: "44873604482",
-      appId: "1:44873604482:web:6e4ff766741cc4fc96839b",
-      measurementId: "G-NMYPJ9VZLV"
-    };
+        apiKey: "AIzaSyCffyHOnYfzlJXuk3ZXNUSeHYRMp1i1mE8",
+        authDomain: "happyhomes-c8bed.firebaseapp.com",
+        databaseURL: "https://happyhomes-c8bed-default-rtdb.firebaseio.com",
+        projectId: "happyhomes-c8bed",
+        storageBucket: "happyhomes-c8bed.firebasestorage.app",
+        messagingSenderId: "44873604482",
+        appId: "1:44873604482:web:6e4ff766741cc4fc96839b",
+        measurementId: "G-NMYPJ9VZLV",
+      };
       const db = getDatabase(initializeApp(firebaseConfig));
       const $ = (selector) => document.querySelector(selector);
       const today = () => new Date().toISOString().slice(0, 10);
@@ -668,7 +668,12 @@
                     ? "overdue"
                     : "pending";
               const text = encodeURIComponent(
-                `Hello ${tenant.name}, this is a reminder that your PG rent of ${money(outstanding)} is due.`,
+                [
+                  `Hello ${tenant.name},`,
+                  `This is a reminder from Happy Homes PG Services that your PG rent of ${money(outstanding)} will be due on ${dueDate.toLocaleDateString("en-IN")}.`,
+                  "Please pay the rent before the due date.",
+                  "Regards,\nHappy Homes PG Services",
+                ].join("\n\n"),
               );
               const action =
                 status === "paid"
