@@ -1,117 +1,1086 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Happy Homes | PG Management</title>
-  <style>
-    :root{--brand:#0f766e;--ink:#172033;--muted:#64748b;--line:#dce3ea;--bg:#f6f8fa}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Arial,sans-serif}.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}.side{background:#fff;border-right:1px solid var(--line);padding:24px}.brand{color:var(--brand);font-size:21px;font-weight:800}.brand small{display:block;color:var(--muted);font-size:11px;margin:5px 0 24px}.nav{display:block;width:100%;border:0;border-radius:6px;background:none;color:#475569;font-weight:700;padding:12px 10px;text-align:left}.nav:hover,.nav.active{background:#f0fdfa;color:var(--brand)}.main{width:100%;max-width:1450px;margin:auto;padding:30px}.top,.actions{display:flex;align-items:center;justify-content:space-between;gap:12px}.top h1{margin:0;font-size:25px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}.card,.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px}.card b{display:block;font-size:27px;margin:9px 0}.panel{margin-top:20px}.btn{border:0;border-radius:6px;background:var(--brand);color:#fff;font-weight:700;padding:10px 14px;text-decoration:none;display:inline-block}.btn.light{border:1px solid var(--brand);background:#fff;color:var(--brand)}.table-wrap{overflow:auto}.table{width:100%;min-width:720px;border-collapse:collapse}.table th,.table td{padding:13px 9px;border-bottom:1px solid #e7ecf0;text-align:left}.table th{color:var(--muted);font-size:11px;text-transform:uppercase}.badge{border-radius:99px;padding:4px 8px;font-size:11px;font-weight:700;background:#e2e8f0}.paid{background:#d1fae5;color:#047857}.overdue{background:#fee2e2;color:#b91c1c}.pending,.partially_paid{background:#fef3c7;color:#92400e}.empty{padding:36px;text-align:center;color:var(--muted)}dialog{border:0;border-radius:9px;width:min(580px,94vw);padding:0;box-shadow:0 25px 70px #0005}dialog::backdrop{background:#0f172a88}dialog form{padding:22px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:block;font-size:12px;font-weight:700;margin-top:12px}input,select,textarea{width:100%;margin-top:5px;padding:10px;border:1px solid #bcc9d5;border-radius:5px;font:inherit}.error{color:#b91c1c}.toast{position:fixed;right:20px;bottom:20px;background:#172033;color:#fff;padding:12px 16px;border-radius:6px}@media(max-width:760px){.app{display:block}.side{padding:15px;border-bottom:1px solid var(--line)}.brand small{display:none}.nav{display:inline-block;width:auto}.main{padding:18px}.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.top{align-items:flex-start}.actions{flex-wrap:wrap}.table{min-width:650px}}
-  </style>
-</head>
-<body>
-<div class="app"><aside class="side"><div class="brand">Happy Homes<small>Shared PG management</small></div><button class="nav active" data-page="dashboard">Dashboard</button><button class="nav" data-page="tenants">Tenants</button><button class="nav" data-page="rooms">Rooms</button><button class="nav" data-page="payments">Payments</button><button class="nav" data-page="renewals">Upcoming renewals</button></aside><main class="main"><div class="top"><div><h1 id="title">Dashboard</h1><p class="muted" id="subtitle">Live property overview</p></div><div class="actions"><button class="btn light" id="roomButton">+ Room</button><button class="btn" id="tenantButton">+ Tenant</button></div></div><div id="view"></div></main></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Happy Homes | PG Management</title>
+    <style>
+      :root {
+        --brand: #0f766e;
+        --ink: #172033;
+        --muted: #64748b;
+        --line: #dce3ea;
+        --bg: #f6f8fa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          14px Arial,
+          sans-serif;
+      }
+      .app {
+        display: grid;
+        grid-template-columns: 230px 1fr;
+        min-height: 100vh;
+      }
+      .side {
+        background: #fff;
+        border-right: 1px solid var(--line);
+        padding: 24px;
+      }
+      .brand {
+        color: var(--brand);
+        font-size: 21px;
+        font-weight: 800;
+      }
+      .brand small {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        margin: 5px 0 24px;
+      }
+      .nav {
+        display: block;
+        width: 100%;
+        border: 0;
+        border-radius: 6px;
+        background: none;
+        color: #475569;
+        font-weight: 700;
+        padding: 12px 10px;
+        text-align: left;
+      }
+      .nav:hover,
+      .nav.active {
+        background: #f0fdfa;
+        color: var(--brand);
+      }
+      .main {
+        width: 100%;
+        max-width: 1450px;
+        margin: auto;
+        padding: 30px;
+      }
+      .top,
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .top h1 {
+        margin: 0;
+        font-size: 25px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-top: 24px;
+      }
+      .card,
+      .panel {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px;
+      }
+      .card b {
+        display: block;
+        font-size: 27px;
+        margin: 9px 0;
+      }
+      .panel {
+        margin-top: 20px;
+      }
+      .btn {
+        border: 0;
+        border-radius: 6px;
+        background: var(--brand);
+        color: #fff;
+        font-weight: 700;
+        padding: 10px 14px;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn.light {
+        border: 1px solid var(--brand);
+        background: #fff;
+        color: var(--brand);
+      }
+      .table-wrap {
+        overflow: auto;
+      }
+      .table {
+        width: 100%;
+        min-width: 720px;
+        border-collapse: collapse;
+      }
+      .table th,
+      .table td {
+        padding: 13px 9px;
+        border-bottom: 1px solid #e7ecf0;
+        text-align: left;
+      }
+      .table th {
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+      .badge {
+        border-radius: 99px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        background: #e2e8f0;
+      }
+      .paid {
+        background: #d1fae5;
+        color: #047857;
+      }
+      .overdue {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .pending,
+      .partially_paid {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .empty {
+        padding: 36px;
+        text-align: center;
+        color: var(--muted);
+      }
+      dialog {
+        border: 0;
+        border-radius: 9px;
+        width: min(580px, 94vw);
+        padding: 0;
+        box-shadow: 0 25px 70px #0005;
+      }
+      dialog::backdrop {
+        background: #0f172a88;
+      }
+      dialog form {
+        padding: 22px;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        margin-top: 12px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        margin-top: 5px;
+        padding: 10px;
+        border: 1px solid #bcc9d5;
+        border-radius: 5px;
+        font: inherit;
+      }
+      .error {
+        color: #b91c1c;
+      }
+      .toast {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        background: #172033;
+        color: #fff;
+        padding: 12px 16px;
+        border-radius: 6px;
+      }
+      @media (max-width: 760px) {
+        .app {
+          display: block;
+        }
+        .side {
+          padding: 15px;
+          border-bottom: 1px solid var(--line);
+        }
+        .brand small {
+          display: none;
+        }
+        .nav {
+          display: inline-block;
+          width: auto;
+        }
+        .main {
+          padding: 18px;
+        }
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .two {
+          grid-template-columns: 1fr;
+        }
+        .top {
+          align-items: flex-start;
+        }
+        .actions {
+          flex-wrap: wrap;
+        }
+        .table {
+          min-width: 650px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="side">
+        <div class="brand">Happy Homes<small>Shared PG management</small></div>
+        <button class="nav active" data-page="dashboard">Dashboard</button
+        ><button class="nav" data-page="tenants">Tenants</button
+        ><button class="nav" data-page="rooms">Rooms</button
+        ><button class="nav" data-page="payments">Payments</button
+        ><button class="nav" data-page="renewals">Upcoming renewals</button>
+      </aside>
+      <main class="main">
+        <div class="top">
+          <div>
+            <h1 id="title">Dashboard</h1>
+            <p class="muted" id="subtitle">Live property overview</p>
+          </div>
+          <div class="actions">
+            <button class="btn light" id="roomButton">+ Room</button
+            ><button class="btn" id="tenantButton">+ Tenant</button>
+          </div>
+        </div>
+        <div id="view"></div>
+      </main>
+    </div>
 
-<dialog id="tenantDialog"><form id="tenantForm"><div class="top"><h2>Add tenant</h2><button class="btn light" type="button" data-close="tenantDialog">Close</button></div><div class="two"><label>Name<input name="name" required /></label><label>Mobile<input name="mobile" pattern="[6-9][0-9]{9}" required /></label><label>Email<input name="email" type="email" /></label><label>Join date<input name="joinDate" type="date" required /></label><label>Monthly rent<input name="monthlyRent" type="number" min="1" required /></label><label>Due day (1-31)<input name="dueDateDay" type="number" min="1" max="31" value="5" required /></label><label>Available room<select name="roomId" id="tenantRoom" required></select></label></div><label>Notes<textarea name="notes"></textarea></label><p class="error" id="tenantError"></p><button class="btn">Save tenant</button></form></dialog>
-<dialog id="roomDialog"><form id="roomForm"><div class="top"><h2>Add room</h2><button class="btn light" type="button" data-close="roomDialog">Close</button></div><div class="two"><label>Room number<input name="roomNumber" required /></label><label>Floor<input name="floor" required /></label><label>Section<select name="gender"><option value="boys">Boys</option><option value="girls">Girls</option></select></label><label>Capacity<input name="capacity" type="number" min="1" required /></label><label>Base rent<input name="monthlyRent" type="number" min="0" /></label></div><button class="btn">Save room</button></form></dialog>
-<dialog id="paymentDialog"><form id="paymentForm"><div class="top"><h2 id="paymentTitle">Record payment</h2><button class="btn light" type="button" data-close="paymentDialog">Close</button></div><input type="hidden" name="paymentId" /><div class="two"><label>Billing month<select name="billingMonth"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></label><label>Billing year<input name="billingYear" type="number" min="2020" max="2200" required /></label><label>Amount received<input name="amount" type="number" min="0" required /></label><label>Payment status<select name="status"><option value="paid">Paid</option><option value="partially_paid">Partially paid</option><option value="pending">Unpaid - pending</option><option value="overdue">Unpaid - overdue</option></select></label><label>Payment date<input name="datePaid" type="date" /></label><label>Method<select name="method"><option value="cash">Cash</option><option value="UPI">UPI</option><option value="bank_transfer">Bank transfer</option><option value="card">Card</option></select></label></div><label>Notes<textarea name="notes"></textarea></label><button class="btn">Save payment</button></form></dialog>
-<dialog id="expenseDialog"><form id="expenseForm"><div class="top"><h2>Add expenditure</h2><button class="btn light" type="button" data-close="expenseDialog">Close</button></div><label>Section<select name="gender"><option value="boys">Boys</option><option value="girls">Girls</option></select></label><label>Description<input name="description" required /></label><label>Amount<input name="amount" type="number" min="1" required /></label><label>Date<input name="date" type="date" required /></label><label>Notes<textarea name="notes"></textarea></label><button class="btn">Save expenditure</button></form></dialog>
-<dialog id="leftDialog"><form id="leftForm"><div class="top"><h2>Mark tenant as left</h2><button class="btn light" type="button" data-close="leftDialog">Close</button></div><input type="hidden" name="tenantId" /><label>Leave date<input name="leaveDate" type="date" required /></label><button class="btn">Confirm move-out</button></form></dialog>
-<dialog id="confirmDialog"><form id="confirmForm"><div class="top"><h2 id="confirmTitle">Confirm deletion</h2><button class="btn light" type="button" data-close="confirmDialog">Close</button></div><p id="confirmText" class="muted"></p><button class="btn" style="background:#b91c1c">Delete permanently</button></form></dialog>
+    <dialog id="tenantDialog">
+      <form id="tenantForm">
+        <div class="top">
+          <h2>Add tenant</h2>
+          <button class="btn light" type="button" data-close="tenantDialog">
+            Close
+          </button>
+        </div>
+        <div class="two">
+          <label>Name<input name="name" required /></label
+          ><label
+            >Mobile<input
+              name="mobile"
+              pattern="[6-9][0-9]{9}"
+              required /></label
+          ><label>Email<input name="email" type="email" /></label
+          ><label>Join date<input name="joinDate" type="date" required /></label
+          ><label
+            >Monthly rent<input
+              name="monthlyRent"
+              type="number"
+              min="1"
+              required /></label
+          ><label
+            >Due day (1-31)<input
+              name="dueDateDay"
+              type="number"
+              min="1"
+              max="31"
+              value="5"
+              required /></label
+          ><label
+            >Available room<select
+              name="roomId"
+              id="tenantRoom"
+              required
+            ></select
+          ></label>
+        </div>
+        <label>Notes<textarea name="notes"></textarea></label>
+        <p class="error" id="tenantError"></p>
+        <button class="btn">Save tenant</button>
+      </form>
+    </dialog>
+    <dialog id="roomDialog">
+      <form id="roomForm">
+        <div class="top">
+          <h2>Add room</h2>
+          <button class="btn light" type="button" data-close="roomDialog">
+            Close
+          </button>
+        </div>
+        <div class="two">
+          <label>Room number<input name="roomNumber" required /></label
+          ><label>Floor<input name="floor" required /></label
+          ><label
+            >Section<select name="gender">
+              <option value="boys">Boys</option>
+              <option value="girls">Girls</option>
+            </select></label
+          ><label
+            >Capacity<input
+              name="capacity"
+              type="number"
+              min="1"
+              required /></label
+          ><label
+            >Base rent<input name="monthlyRent" type="number" min="0"
+          /></label>
+        </div>
+        <button class="btn">Save room</button>
+      </form>
+    </dialog>
+    <dialog id="paymentDialog">
+      <form id="paymentForm">
+        <div class="top">
+          <h2 id="paymentTitle">Record payment</h2>
+          <button class="btn light" type="button" data-close="paymentDialog">
+            Close
+          </button>
+        </div>
+        <input type="hidden" name="paymentId" />
+        <div class="two">
+          <label
+            >Billing month<select name="billingMonth">
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select></label
+          ><label
+            >Billing year<input
+              name="billingYear"
+              type="number"
+              min="2020"
+              max="2200"
+              required /></label
+          ><label
+            >Amount received<input
+              name="amount"
+              type="number"
+              min="0"
+              required /></label
+          ><label
+            >Payment status<select name="status">
+              <option value="paid">Paid</option>
+              <option value="partially_paid">Partially paid</option>
+              <option value="pending">Unpaid - pending</option>
+              <option value="overdue">Unpaid - overdue</option>
+            </select></label
+          ><label>Payment date<input name="datePaid" type="date" /></label
+          ><label
+            >Method<select name="method">
+              <option value="cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="bank_transfer">Bank transfer</option>
+              <option value="card">Card</option>
+            </select></label
+          >
+        </div>
+        <label>Notes<textarea name="notes"></textarea></label
+        ><button class="btn">Save payment</button>
+      </form>
+    </dialog>
+    <dialog id="expenseDialog">
+      <form id="expenseForm">
+        <div class="top">
+          <h2>Add expenditure</h2>
+          <button class="btn light" type="button" data-close="expenseDialog">
+            Close
+          </button>
+        </div>
+        <label
+          >Section<select name="gender">
+            <option value="boys">Boys</option>
+            <option value="girls">Girls</option>
+          </select></label
+        ><label>Description<input name="description" required /></label
+        ><label
+          >Amount<input name="amount" type="number" min="1" required /></label
+        ><label>Date<input name="date" type="date" required /></label
+        ><label>Notes<textarea name="notes"></textarea></label
+        ><button class="btn">Save expenditure</button>
+      </form>
+    </dialog>
+    <dialog id="leftDialog">
+      <form id="leftForm">
+        <div class="top">
+          <h2>Mark tenant as left</h2>
+          <button class="btn light" type="button" data-close="leftDialog">
+            Close
+          </button>
+        </div>
+        <input type="hidden" name="tenantId" /><label
+          >Leave date<input name="leaveDate" type="date" required /></label
+        ><button class="btn">Confirm move-out</button>
+      </form>
+    </dialog>
+    <dialog id="confirmDialog">
+      <form id="confirmForm">
+        <div class="top">
+          <h2 id="confirmTitle">Confirm deletion</h2>
+          <button class="btn light" type="button" data-close="confirmDialog">
+            Close
+          </button>
+        </div>
+        <p id="confirmText" class="muted"></p>
+        <button class="btn" style="background: #b91c1c">
+          Delete permanently
+        </button>
+      </form>
+    </dialog>
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getDatabase, ref, get, push, set, update, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js';
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        get,
+        push,
+        set,
+        update,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
-// Paste Firebase Console > Project settings > General > Your apps > Web app values here.
-const firebaseConfig = { apiKey:'AIzaSyAgJQ0wnPrg3AIRckMcYZ3h_R5amcFggM8', authDomain:'pgwork-88c0c.firebaseapp.com', databaseURL:'https://pgwork-88c0c-default-rtdb.firebaseio.com', projectId:'pgwork-88c0c', storageBucket:'pgwork-88c0c.firebasestorage.app', messagingSenderId:'75146973714', appId:'1:75146973714:web:9fd6be29ead3c135143ecb' };
-const db = getDatabase(initializeApp(firebaseConfig));
-const $ = selector => document.querySelector(selector);
-const today = () => new Date().toISOString().slice(0, 10);
-const money = value => '₹' + Number(value || 0).toLocaleString('en-IN');
-const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-let page = 'dashboard';
-let renewalAnchor = new Date();
-let store = { tenants: [], rooms: [], payments: [], allocations: [], expenditures: [] };
+      // Paste Firebase Console > Project settings > General > Your apps > Web app values here.
+      const firebaseConfig = {
+      apiKey: "AIzaSyCffyHOnYfzlJXuk3ZXNUSeHYRMp1i1mE8",
+      authDomain: "happyhomes-c8bed.firebaseapp.com",
+      databaseURL: "https://happyhomes-c8bed-default-rtdb.firebaseio.com",
+      projectId: "happyhomes-c8bed",
+      storageBucket: "happyhomes-c8bed.firebasestorage.app",
+      messagingSenderId: "44873604482",
+      appId: "1:44873604482:web:6e4ff766741cc4fc96839b",
+      measurementId: "G-NMYPJ9VZLV"
+    };
+      const db = getDatabase(initializeApp(firebaseConfig));
+      const $ = (selector) => document.querySelector(selector);
+      const today = () => new Date().toISOString().slice(0, 10);
+      const money = (value) => "₹" + Number(value || 0).toLocaleString("en-IN");
+      const esc = (value) =>
+        String(value ?? "").replace(
+          /[&<>"']/g,
+          (char) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[char],
+        );
+      let page = "dashboard";
+      let renewalAnchor = new Date();
+      let store = {
+        tenants: [],
+        rooms: [],
+        payments: [],
+        allocations: [],
+        expenditures: [],
+      };
 
-function notify(message) { const item = document.createElement('div'); item.className = 'toast'; item.textContent = message; document.body.append(item); setTimeout(() => item.remove(), 3000); }
-function badge(status) { return `<span class="badge ${esc(status)}">${esc(String(status).replace('_', ' '))}</span>`; }
-async function load() { for (const name of Object.keys(store)) { const snap = await get(ref(db, name)); const data = snap.val() || {}; store[name] = Object.entries(data).map(([id, value]) => ({ id, ...value })); } render(); }
-function setPage(next) { page = next; document.querySelectorAll('.nav').forEach(button => button.classList.toggle('active', button.dataset.page === page)); render(); }
-document.querySelectorAll('.nav').forEach(button => button.onclick = () => setPage(button.dataset.page));
-document.querySelectorAll('[data-close]').forEach(button => button.onclick = () => document.getElementById(button.dataset.close).close());
+      function notify(message) {
+        const item = document.createElement("div");
+        item.className = "toast";
+        item.textContent = message;
+        document.body.append(item);
+        setTimeout(() => item.remove(), 3000);
+      }
+      function badge(status) {
+        return `<span class="badge ${esc(status)}">${esc(String(status).replace("_", " "))}</span>`;
+      }
+      async function load() {
+        for (const name of Object.keys(store)) {
+          const snap = await get(ref(db, name));
+          const data = snap.val() || {};
+          store[name] = Object.entries(data).map(([id, value]) => ({
+            id,
+            ...value,
+          }));
+        }
+        render();
+      }
+      function setPage(next) {
+        page = next;
+        document
+          .querySelectorAll(".nav")
+          .forEach((button) =>
+            button.classList.toggle("active", button.dataset.page === page),
+          );
+        render();
+      }
+      document
+        .querySelectorAll(".nav")
+        .forEach(
+          (button) => (button.onclick = () => setPage(button.dataset.page)),
+        );
+      document
+        .querySelectorAll("[data-close]")
+        .forEach(
+          (button) =>
+            (button.onclick = () =>
+              document.getElementById(button.dataset.close).close()),
+        );
 
-function render() {
-  $('#title').textContent = page === 'rooms' ? 'Rooms' : page[0].toUpperCase() + page.slice(1);
-  $('#subtitle').textContent = page === 'renewals' ? 'Due and overdue rent requiring attention' : 'Live data from Firebase Realtime Database';
-  $('#tenantButton').style.display = page === 'tenants' ? '' : 'none';
-  $('#roomButton').style.display = page === 'rooms' ? '' : 'none';
-  const view = $('#view');
-  if (page === 'dashboard') {
-    const active = store.tenants.filter(item => item.status === 'active').length;
-    const boys = store.tenants.filter(item => item.status === 'active' && item.gender === 'boys').length;
-    const girls = store.tenants.filter(item => item.status === 'active' && item.gender === 'girls').length;
-    const due = store.payments.reduce((sum, item) => sum + (item.amountDue || 0), 0);
-    const paid = store.payments.reduce((sum, item) => sum + (item.amountPaid || 0), 0);
-    view.innerHTML = `<div class="grid"><div class="card">Active tenants<b>${active}</b></div><div class="card">Boys staying<b>${boys}</b></div><div class="card">Girls staying<b>${girls}</b></div><div class="card">Outstanding<b>${money(due - paid)}</b></div></div>`;
-  } else if (page === 'tenants') {
-    const tenantTable = gender => store.tenants.filter(tenant => tenant.gender === gender).map(tenant => `<tr><td><b>${esc(tenant.name)}</b><br><small>${esc(tenant.tenantCode)}</small></td><td>${esc(tenant.mobile)}</td><td>${money(tenant.monthlyRent)}</td><td>${badge(tenant.status)}</td><td><button class="btn light" data-edit-tenant="${tenant.id}">Edit</button> ${tenant.status === 'active' ? `<button class="btn light" data-left="${tenant.id}">Mark left</button> ` : ''}<button class="btn light" data-delete-tenant="${tenant.id}">Remove</button></td></tr>`).join('') || '<tr><td colspan="5" class="empty">No tenants added.</td></tr>';
-    view.innerHTML = `<div class="panel table-wrap"><div class="top"><h3>Boys tenants</h3><button class="btn" data-add-tenant="boys">+ Add boy</button></div><table class="table"><thead><tr><th>Tenant</th><th>Mobile</th><th>Monthly rent</th><th>Status</th><th>Actions</th></tr></thead><tbody>${tenantTable('boys')}</tbody></table></div><div class="panel table-wrap"><div class="top"><h3>Girls tenants</h3><button class="btn" data-add-tenant="girls">+ Add girl</button></div><table class="table"><thead><tr><th>Tenant</th><th>Mobile</th><th>Monthly rent</th><th>Status</th><th>Actions</th></tr></thead><tbody>${tenantTable('girls')}</tbody></table></div>`;
-    document.querySelectorAll('[data-add-tenant]').forEach(button => button.onclick = () => openTenant(button.dataset.addTenant));
-    document.querySelectorAll('[data-edit-tenant]').forEach(button => button.onclick = () => editTenant(button.dataset.editTenant));
-    document.querySelectorAll('[data-left]').forEach(button => button.onclick = () => openLeft(button.dataset.left));
-    document.querySelectorAll('[data-delete-tenant]').forEach(button => button.onclick = () => confirmDelete('tenant', button.dataset.deleteTenant));
-  } else if (page === 'rooms') {
-    const roomTable = gender => store.rooms.filter(room => room.gender === gender).map(room => { const occupied = store.tenants.filter(tenant => tenant.status === 'active' && tenant.roomId === room.id).length; return `<tr><td>${esc(room.roomNumber)}</td><td>${esc(room.floor)}</td><td>${occupied} / ${esc(room.capacity)}</td><td>${money(room.monthlyRent)}</td><td><button class="btn light" data-edit-room="${room.id}">Edit</button> <button class="btn light" data-delete-room="${room.id}">Delete</button></td></tr>`; }).join('') || '<tr><td colspan="5" class="empty">No rooms added.</td></tr>';
-    view.innerHTML = `<div class="panel table-wrap"><h3>Boys rooms</h3><table class="table"><thead><tr><th>Room</th><th>Floor</th><th>Occupancy</th><th>Base rent</th><th>Actions</th></tr></thead><tbody>${roomTable('boys')}</tbody></table></div><div class="panel table-wrap"><h3>Girls rooms</h3><table class="table"><thead><tr><th>Room</th><th>Floor</th><th>Occupancy</th><th>Base rent</th><th>Actions</th></tr></thead><tbody>${roomTable('girls')}</tbody></table></div>`;
-    document.querySelectorAll('[data-edit-room]').forEach(button => button.onclick = () => editRoom(button.dataset.editRoom)); document.querySelectorAll('[data-delete-room]').forEach(button => button.onclick = () => confirmDelete('room', button.dataset.deleteRoom));
-  } else if (page === 'renewals') {
-    const anchor = new Date(renewalAnchor); anchor.setHours(0, 0, 0, 0);
-    const start = new Date(anchor); start.setDate(start.getDate() - 3);
-    const end = new Date(anchor); end.setDate(end.getDate() + 3);
-    const rows = store.tenants.filter(tenant => tenant.status === 'active').map(tenant => {
-      const year = anchor.getFullYear(), month = anchor.getMonth() + 1;
-      const payment = store.payments.find(item => item.tenantId === tenant.id && item.billingMonth === month && item.billingYear === year);
-      const dueDay = Math.min(Number(tenant.dueDateDay || 5), new Date(year, month, 0).getDate());
-      const dueDate = new Date(year, month - 1, dueDay); dueDate.setHours(0, 0, 0, 0);
-      const amountDue = Number(payment?.amountDue ?? tenant.monthlyRent), amountPaid = Number(payment?.amountPaid || 0), outstanding = amountDue - amountPaid;
-      const status = outstanding <= 0 ? 'paid' : dueDate < anchor ? 'overdue' : 'pending';
-      const text = encodeURIComponent(`Hello ${tenant.name}, this is a reminder that your PG rent of ${money(outstanding)} is due.`);
-      const action = status === 'paid' ? `<button class="btn light" data-edit-payment="${payment?.id || ''}" data-tenant="${tenant.id}">Edit payment</button>` : `<a class="btn" target="_blank" href="https://wa.me/91${esc(tenant.mobile)}?text=${text}">WhatsApp</a> <button class="btn light" data-pay="${payment?.id || ''}" data-tenant="${tenant.id}" data-balance="${outstanding}">Record payment</button>`;
-      return dueDate >= start && dueDate <= end ? `<tr><td>${esc(tenant.name)}</td><td>${esc(tenant.gender || '-')}</td><td>${esc(tenant.mobile)}</td><td>${dueDate.toLocaleDateString('en-IN')}</td><td>${money(outstanding)}</td><td>${badge(status)}</td><td>${action}</td></tr>` : '';
-    }).filter(Boolean).join('');
-    view.innerHTML = `<div class="panel"><div class="top"><div><h3>Renewal window</h3><p class="muted">${start.toLocaleDateString('en-IN')} to ${end.toLocaleDateString('en-IN')}</p></div><div class="actions"><button class="btn light" data-renewal-shift="-1">Previous date</button><input id="renewalDate" type="date" value="${anchor.toISOString().slice(0, 10)}" style="width:auto;margin:0"/><button class="btn light" data-renewal-shift="1">Next date</button></div></div></div><div class="panel table-wrap"><table class="table"><thead><tr><th>Tenant</th><th>Section</th><th>Mobile</th><th>Due date</th><th>Outstanding</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty">No renewals in this seven-day window.</td></tr>'}</tbody></table></div>`;
-    document.querySelectorAll('[data-pay]').forEach(button => button.onclick = () => openPayment(button.dataset.pay, button.dataset.tenant, button.dataset.balance));
-    document.querySelectorAll('[data-edit-payment]').forEach(button => button.onclick = () => openPayment(button.dataset.editPayment, button.dataset.tenant, 0));
-    document.querySelectorAll('[data-renewal-shift]').forEach(button => button.onclick = () => { renewalAnchor.setDate(renewalAnchor.getDate() + Number(button.dataset.renewalShift)); render(); });
-    $('#renewalDate').onchange = event => { renewalAnchor = new Date(`${event.target.value}T00:00:00`); render(); };
-  } else if (page === 'payments') {
-    const byGender = (list, gender, field) => list.filter(item => (item.gender || store.tenants.find(tenant => tenant.id === item.tenantId)?.gender) === gender).reduce((sum, item) => sum + Number(item[field] || 0), 0);
-    const boysReceipt = byGender(store.payments, 'boys', 'amountPaid'), girlsReceipt = byGender(store.payments, 'girls', 'amountPaid');
-    const boysExpense = byGender(store.expenditures, 'boys', 'amount'), girlsExpense = byGender(store.expenditures, 'girls', 'amount');
-    const paymentRows = store.payments.map(item => `<tr><td>${esc(item.tenantName)}</td><td>${esc(item.gender || store.tenants.find(tenant => tenant.id === item.tenantId)?.gender || '-')}</td><td>${esc(item.billingMonth)}/${esc(item.billingYear)}</td><td>${money(item.amountDue)}</td><td>${money(item.amountPaid)}</td><td>${badge(item.status)}</td><td><button class="btn light" data-edit-payment="${item.id}" data-tenant="${item.tenantId}">Edit</button></td></tr>`).join('');
-    const expenseRows = store.expenditures.map(item => `<tr><td>${esc(item.date)}</td><td>${esc(item.gender)}</td><td>${esc(item.description)}</td><td>${money(item.amount)}</td><td>${esc(item.notes || '-')}</td></tr>`).join('');
-    view.innerHTML = `<div class="grid"><div class="card">Boys revenue<b>${money(boysReceipt)}</b><span class="muted">Rent receipts till date</span></div><div class="card">Girls revenue<b>${money(girlsReceipt)}</b><span class="muted">Rent receipts till date</span></div><div class="card">Boys expenditure<b>${money(boysExpense)}</b><span class="muted">Manually recorded</span></div><div class="card">Girls expenditure<b>${money(girlsExpense)}</b><span class="muted">Manually recorded</span></div></div><div class="panel table-wrap"><div class="top"><h3>Monthly payments till date</h3></div><table class="table"><thead><tr><th>Tenant</th><th>Section</th><th>Month</th><th>Amount due</th><th>Receipt</th><th>Status</th><th>Action</th></tr></thead><tbody>${paymentRows || '<tr><td colspan="7" class="empty">No payment records yet.</td></tr>'}</tbody></table></div><div class="panel table-wrap"><div class="top"><h3>Expenditure</h3><button class="btn" id="expenseButton">+ Add expenditure</button></div><table class="table"><thead><tr><th>Date</th><th>Section</th><th>Description</th><th>Expenditure</th><th>Notes</th></tr></thead><tbody>${expenseRows || '<tr><td colspan="5" class="empty">No expenditure added.</td></tr>'}</tbody></table></div>`;
-    $('#expenseButton').onclick = () => { $('#expenseForm').date.value = today(); $('#expenseDialog').showModal(); };
-    document.querySelectorAll('[data-edit-payment]').forEach(button => button.onclick = () => openPayment(button.dataset.editPayment, button.dataset.tenant, 0));
-  }
-}
+      function render() {
+        $("#title").textContent =
+          page === "rooms" ? "Rooms" : page[0].toUpperCase() + page.slice(1);
+        $("#subtitle").textContent =
+          page === "renewals"
+            ? "Due and overdue rent requiring attention"
+            : "Live data from Firebase Realtime Database";
+        $("#tenantButton").style.display = page === "tenants" ? "" : "none";
+        $("#roomButton").style.display = page === "rooms" ? "" : "none";
+        const view = $("#view");
+        if (page === "dashboard") {
+          const active = store.tenants.filter(
+            (item) => item.status === "active",
+          ).length;
+          const boys = store.tenants.filter(
+            (item) => item.status === "active" && item.gender === "boys",
+          ).length;
+          const girls = store.tenants.filter(
+            (item) => item.status === "active" && item.gender === "girls",
+          ).length;
+          const due = store.payments.reduce(
+            (sum, item) => sum + (item.amountDue || 0),
+            0,
+          );
+          const paid = store.payments.reduce(
+            (sum, item) => sum + (item.amountPaid || 0),
+            0,
+          );
+          view.innerHTML = `<div class="grid"><div class="card">Active tenants<b>${active}</b></div><div class="card">Boys staying<b>${boys}</b></div><div class="card">Girls staying<b>${girls}</b></div><div class="card">Outstanding<b>${money(due - paid)}</b></div></div>`;
+        } else if (page === "tenants") {
+          const tenantTable = (gender) =>
+            store.tenants
+              .filter((tenant) => tenant.gender === gender)
+              .map(
+                (tenant) =>
+                  `<tr><td><b>${esc(tenant.name)}</b><br><small>${esc(tenant.tenantCode)}</small></td><td>${esc(tenant.mobile)}</td><td>${money(tenant.monthlyRent)}</td><td>${badge(tenant.status)}</td><td><button class="btn light" data-edit-tenant="${tenant.id}">Edit</button> ${tenant.status === "active" ? `<button class="btn light" data-left="${tenant.id}">Mark left</button> ` : ""}<button class="btn light" data-delete-tenant="${tenant.id}">Remove</button></td></tr>`,
+              )
+              .join("") ||
+            '<tr><td colspan="5" class="empty">No tenants added.</td></tr>';
+          view.innerHTML = `<div class="panel table-wrap"><div class="top"><h3>Boys tenants</h3><button class="btn" data-add-tenant="boys">+ Add boy</button></div><table class="table"><thead><tr><th>Tenant</th><th>Mobile</th><th>Monthly rent</th><th>Status</th><th>Actions</th></tr></thead><tbody>${tenantTable("boys")}</tbody></table></div><div class="panel table-wrap"><div class="top"><h3>Girls tenants</h3><button class="btn" data-add-tenant="girls">+ Add girl</button></div><table class="table"><thead><tr><th>Tenant</th><th>Mobile</th><th>Monthly rent</th><th>Status</th><th>Actions</th></tr></thead><tbody>${tenantTable("girls")}</tbody></table></div>`;
+          document
+            .querySelectorAll("[data-add-tenant]")
+            .forEach(
+              (button) =>
+                (button.onclick = () => openTenant(button.dataset.addTenant)),
+            );
+          document
+            .querySelectorAll("[data-edit-tenant]")
+            .forEach(
+              (button) =>
+                (button.onclick = () => editTenant(button.dataset.editTenant)),
+            );
+          document
+            .querySelectorAll("[data-left]")
+            .forEach(
+              (button) =>
+                (button.onclick = () => openLeft(button.dataset.left)),
+            );
+          document
+            .querySelectorAll("[data-delete-tenant]")
+            .forEach(
+              (button) =>
+                (button.onclick = () =>
+                  confirmDelete("tenant", button.dataset.deleteTenant)),
+            );
+        } else if (page === "rooms") {
+          const roomTable = (gender) =>
+            store.rooms
+              .filter((room) => room.gender === gender)
+              .map((room) => {
+                const occupied = store.tenants.filter(
+                  (tenant) =>
+                    tenant.status === "active" && tenant.roomId === room.id,
+                ).length;
+                return `<tr><td>${esc(room.roomNumber)}</td><td>${esc(room.floor)}</td><td>${occupied} / ${esc(room.capacity)}</td><td>${money(room.monthlyRent)}</td><td><button class="btn light" data-edit-room="${room.id}">Edit</button> <button class="btn light" data-delete-room="${room.id}">Delete</button></td></tr>`;
+              })
+              .join("") ||
+            '<tr><td colspan="5" class="empty">No rooms added.</td></tr>';
+          view.innerHTML = `<div class="panel table-wrap"><h3>Boys rooms</h3><table class="table"><thead><tr><th>Room</th><th>Floor</th><th>Occupancy</th><th>Base rent</th><th>Actions</th></tr></thead><tbody>${roomTable("boys")}</tbody></table></div><div class="panel table-wrap"><h3>Girls rooms</h3><table class="table"><thead><tr><th>Room</th><th>Floor</th><th>Occupancy</th><th>Base rent</th><th>Actions</th></tr></thead><tbody>${roomTable("girls")}</tbody></table></div>`;
+          document
+            .querySelectorAll("[data-edit-room]")
+            .forEach(
+              (button) =>
+                (button.onclick = () => editRoom(button.dataset.editRoom)),
+            );
+          document
+            .querySelectorAll("[data-delete-room]")
+            .forEach(
+              (button) =>
+                (button.onclick = () =>
+                  confirmDelete("room", button.dataset.deleteRoom)),
+            );
+        } else if (page === "renewals") {
+          const anchor = new Date(renewalAnchor);
+          anchor.setHours(0, 0, 0, 0);
+          const start = new Date(anchor);
+          start.setDate(start.getDate() - 3);
+          const end = new Date(anchor);
+          end.setDate(end.getDate() + 3);
+          const rows = store.tenants
+            .filter((tenant) => tenant.status === "active")
+            .map((tenant) => {
+              const year = anchor.getFullYear(),
+                month = anchor.getMonth() + 1;
+              const payment = store.payments.find(
+                (item) =>
+                  item.tenantId === tenant.id &&
+                  item.billingMonth === month &&
+                  item.billingYear === year,
+              );
+              const dueDay = Math.min(
+                Number(tenant.dueDateDay || 5),
+                new Date(year, month, 0).getDate(),
+              );
+              const dueDate = new Date(year, month - 1, dueDay);
+              dueDate.setHours(0, 0, 0, 0);
+              const amountDue = Number(
+                  payment?.amountDue ?? tenant.monthlyRent,
+                ),
+                amountPaid = Number(payment?.amountPaid || 0),
+                outstanding = amountDue - amountPaid;
+              const status =
+                outstanding <= 0
+                  ? "paid"
+                  : dueDate < anchor
+                    ? "overdue"
+                    : "pending";
+              const text = encodeURIComponent(
+                `Hello ${tenant.name}, this is a reminder that your PG rent of ${money(outstanding)} is due.`,
+              );
+              const action =
+                status === "paid"
+                  ? `<button class="btn light" data-edit-payment="${payment?.id || ""}" data-tenant="${tenant.id}">Edit payment</button>`
+                  : `<a class="btn" target="_blank" href="https://wa.me/91${esc(tenant.mobile)}?text=${text}">WhatsApp</a> <button class="btn light" data-pay="${payment?.id || ""}" data-tenant="${tenant.id}" data-balance="${outstanding}">Record payment</button>`;
+              return dueDate >= start && dueDate <= end
+                ? `<tr><td>${esc(tenant.name)}</td><td>${esc(tenant.gender || "-")}</td><td>${esc(tenant.mobile)}</td><td>${dueDate.toLocaleDateString("en-IN")}</td><td>${money(outstanding)}</td><td>${badge(status)}</td><td>${action}</td></tr>`
+                : "";
+            })
+            .filter(Boolean)
+            .join("");
+          view.innerHTML = `<div class="panel"><div class="top"><div><h3>Renewal window</h3><p class="muted">${start.toLocaleDateString("en-IN")} to ${end.toLocaleDateString("en-IN")}</p></div><div class="actions"><button class="btn light" data-renewal-shift="-1">Previous date</button><input id="renewalDate" type="date" value="${anchor.toISOString().slice(0, 10)}" style="width:auto;margin:0"/><button class="btn light" data-renewal-shift="1">Next date</button></div></div></div><div class="panel table-wrap"><table class="table"><thead><tr><th>Tenant</th><th>Section</th><th>Mobile</th><th>Due date</th><th>Outstanding</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="empty">No renewals in this seven-day window.</td></tr>'}</tbody></table></div>`;
+          document
+            .querySelectorAll("[data-pay]")
+            .forEach(
+              (button) =>
+                (button.onclick = () =>
+                  openPayment(
+                    button.dataset.pay,
+                    button.dataset.tenant,
+                    button.dataset.balance,
+                  )),
+            );
+          document
+            .querySelectorAll("[data-edit-payment]")
+            .forEach(
+              (button) =>
+                (button.onclick = () =>
+                  openPayment(
+                    button.dataset.editPayment,
+                    button.dataset.tenant,
+                    0,
+                  )),
+            );
+          document.querySelectorAll("[data-renewal-shift]").forEach(
+            (button) =>
+              (button.onclick = () => {
+                renewalAnchor.setDate(
+                  renewalAnchor.getDate() + Number(button.dataset.renewalShift),
+                );
+                render();
+              }),
+          );
+          $("#renewalDate").onchange = (event) => {
+            renewalAnchor = new Date(`${event.target.value}T00:00:00`);
+            render();
+          };
+        } else if (page === "payments") {
+          const byGender = (list, gender, field) =>
+            list
+              .filter(
+                (item) =>
+                  (item.gender ||
+                    store.tenants.find((tenant) => tenant.id === item.tenantId)
+                      ?.gender) === gender,
+              )
+              .reduce((sum, item) => sum + Number(item[field] || 0), 0);
+          const boysReceipt = byGender(store.payments, "boys", "amountPaid"),
+            girlsReceipt = byGender(store.payments, "girls", "amountPaid");
+          const boysExpense = byGender(store.expenditures, "boys", "amount"),
+            girlsExpense = byGender(store.expenditures, "girls", "amount");
+          const paymentRows = store.payments
+            .map(
+              (item) =>
+                `<tr><td>${esc(item.tenantName)}</td><td>${esc(item.gender || store.tenants.find((tenant) => tenant.id === item.tenantId)?.gender || "-")}</td><td>${esc(item.billingMonth)}/${esc(item.billingYear)}</td><td>${money(item.amountDue)}</td><td>${money(item.amountPaid)}</td><td>${badge(item.status)}</td><td><button class="btn light" data-edit-payment="${item.id}" data-tenant="${item.tenantId}">Edit</button></td></tr>`,
+            )
+            .join("");
+          const expenseRows = store.expenditures
+            .map(
+              (item) =>
+                `<tr><td>${esc(item.date)}</td><td>${esc(item.gender)}</td><td>${esc(item.description)}</td><td>${money(item.amount)}</td><td>${esc(item.notes || "-")}</td></tr>`,
+            )
+            .join("");
+          view.innerHTML = `<div class="grid"><div class="card">Boys revenue<b>${money(boysReceipt)}</b><span class="muted">Rent receipts till date</span></div><div class="card">Girls revenue<b>${money(girlsReceipt)}</b><span class="muted">Rent receipts till date</span></div><div class="card">Boys expenditure<b>${money(boysExpense)}</b><span class="muted">Manually recorded</span></div><div class="card">Girls expenditure<b>${money(girlsExpense)}</b><span class="muted">Manually recorded</span></div></div><div class="panel table-wrap"><div class="top"><h3>Monthly payments till date</h3></div><table class="table"><thead><tr><th>Tenant</th><th>Section</th><th>Month</th><th>Amount due</th><th>Receipt</th><th>Status</th><th>Action</th></tr></thead><tbody>${paymentRows || '<tr><td colspan="7" class="empty">No payment records yet.</td></tr>'}</tbody></table></div><div class="panel table-wrap"><div class="top"><h3>Expenditure</h3><button class="btn" id="expenseButton">+ Add expenditure</button></div><table class="table"><thead><tr><th>Date</th><th>Section</th><th>Description</th><th>Expenditure</th><th>Notes</th></tr></thead><tbody>${expenseRows || '<tr><td colspan="5" class="empty">No expenditure added.</td></tr>'}</tbody></table></div>`;
+          $("#expenseButton").onclick = () => {
+            $("#expenseForm").date.value = today();
+            $("#expenseDialog").showModal();
+          };
+          document
+            .querySelectorAll("[data-edit-payment]")
+            .forEach(
+              (button) =>
+                (button.onclick = () =>
+                  openPayment(
+                    button.dataset.editPayment,
+                    button.dataset.tenant,
+                    0,
+                  )),
+            );
+        }
+      }
 
-function roomOptions(gender = '', selectedRoomId = '') { return store.rooms.filter(room => { const occupied = store.tenants.filter(tenant => tenant.status === 'active' && tenant.roomId === room.id).length; return (!gender || room.gender === gender) && (room.id === selectedRoomId || occupied < Number(room.capacity || 0)); }).map(room => { const occupied = store.tenants.filter(tenant => tenant.status === 'active' && tenant.roomId === room.id).length; return `<option value="${room.id}" ${room.id === selectedRoomId ? 'selected' : ''}>${esc(`${room.gender} - Room ${room.roomNumber} (${occupied}/${room.capacity})`)}</option>`; }).join(''); }
-function openTenant(gender = '') { const form = $('#tenantForm'); form.reset(); form.dataset.tenantId = ''; form.dataset.originalRoomId = ''; $('#tenantDialog h2').textContent = 'Add tenant'; $('#tenantRoom').innerHTML = roomOptions(gender); form.joinDate.value = today(); $('#tenantDialog').showModal(); }
-$('#tenantButton').onclick = () => openTenant();
-$('#roomButton').onclick = () => { $('#roomForm').reset(); $('#roomForm').dataset.roomId = ''; $('#roomDialog h2').textContent = 'Add room'; $('#roomDialog').showModal(); };
+      function roomOptions(gender = "", selectedRoomId = "") {
+        return store.rooms
+          .filter((room) => {
+            const occupied = store.tenants.filter(
+              (tenant) =>
+                tenant.status === "active" && tenant.roomId === room.id,
+            ).length;
+            return (
+              (!gender || room.gender === gender) &&
+              (room.id === selectedRoomId ||
+                occupied < Number(room.capacity || 0))
+            );
+          })
+          .map((room) => {
+            const occupied = store.tenants.filter(
+              (tenant) =>
+                tenant.status === "active" && tenant.roomId === room.id,
+            ).length;
+            return `<option value="${room.id}" ${room.id === selectedRoomId ? "selected" : ""}>${esc(`${room.gender} - Room ${room.roomNumber} (${occupied}/${room.capacity})`)}</option>`;
+          })
+          .join("");
+      }
+      function openTenant(gender = "") {
+        const form = $("#tenantForm");
+        form.reset();
+        form.dataset.tenantId = "";
+        form.dataset.originalRoomId = "";
+        $("#tenantDialog h2").textContent = "Add tenant";
+        $("#tenantRoom").innerHTML = roomOptions(gender);
+        form.joinDate.value = today();
+        $("#tenantDialog").showModal();
+      }
+      $("#tenantButton").onclick = () => openTenant();
+      $("#roomButton").onclick = () => {
+        $("#roomForm").reset();
+        $("#roomForm").dataset.roomId = "";
+        $("#roomDialog h2").textContent = "Add room";
+        $("#roomDialog").showModal();
+      };
 
-$('#tenantForm').onsubmit = async event => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget)), form = event.currentTarget, room = store.rooms.find(item => item.id === data.roomId), tenantId = form.dataset.tenantId; const occupied = store.tenants.filter(item => item.status === 'active' && item.roomId === data.roomId && item.id !== tenantId).length; if (!room || occupied >= Number(room.capacity)) { $('#tenantError').textContent = 'Select a room with available capacity.'; return; } const changes = {}; if (tenantId) { changes[`tenants/${tenantId}`] = { ...store.tenants.find(item => item.id === tenantId), id:undefined, name:data.name, mobile:data.mobile, email:data.email || null, gender:room.gender, roomId:data.roomId, joinDate:data.joinDate, monthlyRent:Number(data.monthlyRent), dueDateDay:Number(data.dueDateDay), notes:data.notes || null, updatedAt:serverTimestamp() }; delete changes[`tenants/${tenantId}`].id; if (form.dataset.originalRoomId !== data.roomId) { const activeAllocation = store.allocations.find(item => item.tenantId === tenantId && !item.endDate); if (activeAllocation) changes[`allocations/${activeAllocation.id}/endDate`] = today(); const allocationId = push(ref(db, 'allocations')).key; changes[`allocations/${allocationId}`] = { tenantId, roomId:data.roomId, startDate:today(), endDate:null, createdAt:serverTimestamp() }; } } else { const newTenantId = push(ref(db, 'tenants')).key, allocationId = push(ref(db, 'allocations')).key; changes[`tenants/${newTenantId}`] = { tenantCode:'T-' + Date.now().toString().slice(-6), name:data.name, mobile:data.mobile, email:data.email || null, gender:room.gender, roomId:data.roomId, joinDate:data.joinDate, status:'active', monthlyRent:Number(data.monthlyRent), dueDateDay:Number(data.dueDateDay), notes:data.notes || null, createdAt:serverTimestamp() }; changes[`allocations/${allocationId}`] = { tenantId:newTenantId, roomId:data.roomId, startDate:data.joinDate, endDate:null, createdAt:serverTimestamp() }; } try { await update(ref(db), changes); $('#tenantDialog').close(); form.reset(); await load(); notify(tenantId ? 'Tenant updated.' : 'Tenant added successfully.'); } catch { $('#tenantError').textContent = 'Could not save. Check room capacity and database rules.'; } };
-$('#roomForm').onsubmit = async event => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget)), roomId = event.currentTarget.dataset.roomId || push(ref(db, 'rooms')).key; await update(ref(db, `rooms/${roomId}`), { ...data, capacity:Number(data.capacity), monthlyRent:Number(data.monthlyRent || 0), createdAt:serverTimestamp() }); $('#roomDialog').close(); event.currentTarget.reset(); await load(); notify('Room saved.'); };
-function openPayment(paymentId, tenantId, balance) { const form = $('#paymentForm'), old = store.payments.find(item => item.id === paymentId), now = new Date(); form.reset(); form.paymentId.value = paymentId || ''; form.dataset.tenantId = tenantId; $('#paymentTitle').textContent = old ? 'Edit payment' : 'Record payment'; form.billingMonth.value = old?.billingMonth || now.getMonth() + 1; form.billingYear.value = old?.billingYear || now.getFullYear(); form.amount.value = old?.amountPaid ?? balance; form.status.value = old?.status || 'paid'; form.datePaid.value = old?.datePaid || today(); form.method.value = old?.paymentMethod || 'cash'; form.notes.value = old?.notes || ''; $('#paymentDialog').showModal(); }
-$('#paymentForm').onsubmit = async event => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget)); const old = store.payments.find(item => item.id === data.paymentId), tenant = store.tenants.find(item => item.id === event.currentTarget.dataset.tenantId); const due = Number(old?.amountDue ?? data.amount), requested = Number(data.amount), unpaid = data.status === 'pending' || data.status === 'overdue'; let paid = unpaid ? 0 : requested, status = data.status; if (status === 'paid') paid = due; if (status === 'partially_paid' && (paid <= 0 || paid >= due)) { notify('For partial payment, enter an amount between zero and the amount due.'); return; } if (paid > due) { notify('Payment cannot exceed amount due.'); return; } const record = { tenantId:event.currentTarget.dataset.tenantId, tenantName:tenant?.name || old?.tenantName || '', gender:tenant?.gender || old?.gender || '', billingMonth:Number(data.billingMonth), billingYear:Number(data.billingYear), amountDue:due, amountPaid:paid, datePaid:unpaid ? null : (data.datePaid || today()), paymentMethod:unpaid ? null : data.method, notes:data.notes || null, status, updatedAt:serverTimestamp() }; if (old) await update(ref(db, `payments/${old.id}`), { ...record, correctedAt:unpaid ? serverTimestamp() : old.correctedAt || null }); else { const paymentId = push(ref(db, 'payments')).key; await set(ref(db, `payments/${paymentId}`), { ...record, createdAt:serverTimestamp() }); } $('#paymentDialog').close(); await load(); notify('Payment saved.'); };
-$('#expenseForm').onsubmit = async event => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget)), expenseId = push(ref(db, 'expenditures')).key; await set(ref(db, `expenditures/${expenseId}`), { ...data, amount:Number(data.amount), createdAt:serverTimestamp() }); $('#expenseDialog').close(); event.currentTarget.reset(); await load(); notify('Expenditure saved.'); };
-function editRoom(id) { const room = store.rooms.find(item => item.id === id), form = $('#roomForm'); form.dataset.roomId = id; form.roomNumber.value = room.roomNumber || ''; form.floor.value = room.floor || ''; form.gender.value = room.gender || 'boys'; form.capacity.value = room.capacity || ''; form.monthlyRent.value = room.monthlyRent || ''; $('#roomDialog h2').textContent = 'Edit room'; $('#roomDialog').showModal(); }
-function editTenant(id) { const tenant = store.tenants.find(item => item.id === id), form = $('#tenantForm'); form.dataset.tenantId = id; form.dataset.originalRoomId = tenant.roomId || ''; $('#tenantDialog h2').textContent = 'Edit tenant'; $('#tenantRoom').innerHTML = roomOptions(tenant.gender, tenant.roomId); form.name.value = tenant.name || ''; form.mobile.value = tenant.mobile || ''; form.email.value = tenant.email || ''; form.joinDate.value = tenant.joinDate || today(); form.monthlyRent.value = tenant.monthlyRent || ''; form.dueDateDay.value = tenant.dueDateDay || 5; form.notes.value = tenant.notes || ''; $('#tenantError').textContent = ''; $('#tenantDialog').showModal(); }
-function openLeft(id) { const form = $('#leftForm'); form.tenantId.value = id; form.leaveDate.value = today(); $('#leftDialog').showModal(); }
-$('#leftForm').onsubmit = async event => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget)), allocation = store.allocations.find(item => item.tenantId === data.tenantId && !item.endDate), changes = {}; changes[`tenants/${data.tenantId}/status`] = 'left'; changes[`tenants/${data.tenantId}/leaveDate`] = data.leaveDate; if (allocation) changes[`allocations/${allocation.id}/endDate`] = data.leaveDate; await update(ref(db), changes); $('#leftDialog').close(); await load(); notify('Tenant marked as left.'); };
-let deleteTarget = null;
-function confirmDelete(type, id) { deleteTarget = { type, id }; const labels = { tenant:'tenant and their allocation history', room:'room' }; $('#confirmTitle').textContent = `Delete ${labels[type]}`; $('#confirmText').textContent = 'This action cannot be undone.'; $('#confirmDialog').showModal(); }
-$('#confirmForm').onsubmit = async event => { event.preventDefault(); const { type, id } = deleteTarget, changes = {}; if (type === 'tenant') { changes[`tenants/${id}`] = null; store.allocations.filter(item => item.tenantId === id).forEach(item => changes[`allocations/${item.id}`] = null); } if (type === 'room') { if (store.tenants.some(item => item.status === 'active' && item.roomId === id)) { notify('Mark the room tenants as left before deleting this room.'); $('#confirmDialog').close(); return; } changes[`rooms/${id}`] = null; } await update(ref(db), changes); $('#confirmDialog').close(); await load(); notify('Deleted.'); };
-load().catch(() => { $('#view').innerHTML = '<div class="panel empty">Paste your Firebase Web App configuration, including databaseURL, then publish the Realtime Database rules.</div>'; });
-</script></body></html>
+      $("#tenantForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget)),
+          form = event.currentTarget,
+          room = store.rooms.find((item) => item.id === data.roomId),
+          tenantId = form.dataset.tenantId;
+        const occupied = store.tenants.filter(
+          (item) =>
+            item.status === "active" &&
+            item.roomId === data.roomId &&
+            item.id !== tenantId,
+        ).length;
+        if (!room || occupied >= Number(room.capacity)) {
+          $("#tenantError").textContent =
+            "Select a room with available capacity.";
+          return;
+        }
+        const changes = {};
+        if (tenantId) {
+          changes[`tenants/${tenantId}`] = {
+            ...store.tenants.find((item) => item.id === tenantId),
+            id: undefined,
+            name: data.name,
+            mobile: data.mobile,
+            email: data.email || null,
+            gender: room.gender,
+            roomId: data.roomId,
+            joinDate: data.joinDate,
+            monthlyRent: Number(data.monthlyRent),
+            dueDateDay: Number(data.dueDateDay),
+            notes: data.notes || null,
+            updatedAt: serverTimestamp(),
+          };
+          delete changes[`tenants/${tenantId}`].id;
+          if (form.dataset.originalRoomId !== data.roomId) {
+            const activeAllocation = store.allocations.find(
+              (item) => item.tenantId === tenantId && !item.endDate,
+            );
+            if (activeAllocation)
+              changes[`allocations/${activeAllocation.id}/endDate`] = today();
+            const allocationId = push(ref(db, "allocations")).key;
+            changes[`allocations/${allocationId}`] = {
+              tenantId,
+              roomId: data.roomId,
+              startDate: today(),
+              endDate: null,
+              createdAt: serverTimestamp(),
+            };
+          }
+        } else {
+          const newTenantId = push(ref(db, "tenants")).key,
+            allocationId = push(ref(db, "allocations")).key;
+          changes[`tenants/${newTenantId}`] = {
+            tenantCode: "T-" + Date.now().toString().slice(-6),
+            name: data.name,
+            mobile: data.mobile,
+            email: data.email || null,
+            gender: room.gender,
+            roomId: data.roomId,
+            joinDate: data.joinDate,
+            status: "active",
+            monthlyRent: Number(data.monthlyRent),
+            dueDateDay: Number(data.dueDateDay),
+            notes: data.notes || null,
+            createdAt: serverTimestamp(),
+          };
+          changes[`allocations/${allocationId}`] = {
+            tenantId: newTenantId,
+            roomId: data.roomId,
+            startDate: data.joinDate,
+            endDate: null,
+            createdAt: serverTimestamp(),
+          };
+        }
+        try {
+          await update(ref(db), changes);
+          $("#tenantDialog").close();
+          form.reset();
+          await load();
+          notify(tenantId ? "Tenant updated." : "Tenant added successfully.");
+        } catch {
+          $("#tenantError").textContent =
+            "Could not save. Check room capacity and database rules.";
+        }
+      };
+      $("#roomForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget)),
+          roomId =
+            event.currentTarget.dataset.roomId || push(ref(db, "rooms")).key;
+        await update(ref(db, `rooms/${roomId}`), {
+          ...data,
+          capacity: Number(data.capacity),
+          monthlyRent: Number(data.monthlyRent || 0),
+          createdAt: serverTimestamp(),
+        });
+        $("#roomDialog").close();
+        event.currentTarget.reset();
+        await load();
+        notify("Room saved.");
+      };
+      function openPayment(paymentId, tenantId, balance) {
+        const form = $("#paymentForm"),
+          old = store.payments.find((item) => item.id === paymentId),
+          now = new Date();
+        form.reset();
+        form.paymentId.value = paymentId || "";
+        form.dataset.tenantId = tenantId;
+        $("#paymentTitle").textContent = old
+          ? "Edit payment"
+          : "Record payment";
+        form.billingMonth.value = old?.billingMonth || now.getMonth() + 1;
+        form.billingYear.value = old?.billingYear || now.getFullYear();
+        form.amount.value = old?.amountPaid ?? balance;
+        form.status.value = old?.status || "paid";
+        form.datePaid.value = old?.datePaid || today();
+        form.method.value = old?.paymentMethod || "cash";
+        form.notes.value = old?.notes || "";
+        $("#paymentDialog").showModal();
+      }
+      $("#paymentForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget));
+        const old = store.payments.find((item) => item.id === data.paymentId),
+          tenant = store.tenants.find(
+            (item) => item.id === event.currentTarget.dataset.tenantId,
+          );
+        const due = Number(old?.amountDue ?? data.amount),
+          requested = Number(data.amount),
+          unpaid = data.status === "pending" || data.status === "overdue";
+        let paid = unpaid ? 0 : requested,
+          status = data.status;
+        if (status === "paid") paid = due;
+        if (status === "partially_paid" && (paid <= 0 || paid >= due)) {
+          notify(
+            "For partial payment, enter an amount between zero and the amount due.",
+          );
+          return;
+        }
+        if (paid > due) {
+          notify("Payment cannot exceed amount due.");
+          return;
+        }
+        const record = {
+          tenantId: event.currentTarget.dataset.tenantId,
+          tenantName: tenant?.name || old?.tenantName || "",
+          gender: tenant?.gender || old?.gender || "",
+          billingMonth: Number(data.billingMonth),
+          billingYear: Number(data.billingYear),
+          amountDue: due,
+          amountPaid: paid,
+          datePaid: unpaid ? null : data.datePaid || today(),
+          paymentMethod: unpaid ? null : data.method,
+          notes: data.notes || null,
+          status,
+          updatedAt: serverTimestamp(),
+        };
+        if (old)
+          await update(ref(db, `payments/${old.id}`), {
+            ...record,
+            correctedAt: unpaid ? serverTimestamp() : old.correctedAt || null,
+          });
+        else {
+          const paymentId = push(ref(db, "payments")).key;
+          await set(ref(db, `payments/${paymentId}`), {
+            ...record,
+            createdAt: serverTimestamp(),
+          });
+        }
+        $("#paymentDialog").close();
+        await load();
+        notify("Payment saved.");
+      };
+      $("#expenseForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget)),
+          expenseId = push(ref(db, "expenditures")).key;
+        await set(ref(db, `expenditures/${expenseId}`), {
+          ...data,
+          amount: Number(data.amount),
+          createdAt: serverTimestamp(),
+        });
+        $("#expenseDialog").close();
+        event.currentTarget.reset();
+        await load();
+        notify("Expenditure saved.");
+      };
+      function editRoom(id) {
+        const room = store.rooms.find((item) => item.id === id),
+          form = $("#roomForm");
+        form.dataset.roomId = id;
+        form.roomNumber.value = room.roomNumber || "";
+        form.floor.value = room.floor || "";
+        form.gender.value = room.gender || "boys";
+        form.capacity.value = room.capacity || "";
+        form.monthlyRent.value = room.monthlyRent || "";
+        $("#roomDialog h2").textContent = "Edit room";
+        $("#roomDialog").showModal();
+      }
+      function editTenant(id) {
+        const tenant = store.tenants.find((item) => item.id === id),
+          form = $("#tenantForm");
+        form.dataset.tenantId = id;
+        form.dataset.originalRoomId = tenant.roomId || "";
+        $("#tenantDialog h2").textContent = "Edit tenant";
+        $("#tenantRoom").innerHTML = roomOptions(tenant.gender, tenant.roomId);
+        form.name.value = tenant.name || "";
+        form.mobile.value = tenant.mobile || "";
+        form.email.value = tenant.email || "";
+        form.joinDate.value = tenant.joinDate || today();
+        form.monthlyRent.value = tenant.monthlyRent || "";
+        form.dueDateDay.value = tenant.dueDateDay || 5;
+        form.notes.value = tenant.notes || "";
+        $("#tenantError").textContent = "";
+        $("#tenantDialog").showModal();
+      }
+      function openLeft(id) {
+        const form = $("#leftForm");
+        form.tenantId.value = id;
+        form.leaveDate.value = today();
+        $("#leftDialog").showModal();
+      }
+      $("#leftForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget)),
+          allocation = store.allocations.find(
+            (item) => item.tenantId === data.tenantId && !item.endDate,
+          ),
+          changes = {};
+        changes[`tenants/${data.tenantId}/status`] = "left";
+        changes[`tenants/${data.tenantId}/leaveDate`] = data.leaveDate;
+        if (allocation)
+          changes[`allocations/${allocation.id}/endDate`] = data.leaveDate;
+        await update(ref(db), changes);
+        $("#leftDialog").close();
+        await load();
+        notify("Tenant marked as left.");
+      };
+      let deleteTarget = null;
+      function confirmDelete(type, id) {
+        deleteTarget = { type, id };
+        const labels = {
+          tenant: "tenant and their allocation history",
+          room: "room",
+        };
+        $("#confirmTitle").textContent = `Delete ${labels[type]}`;
+        $("#confirmText").textContent = "This action cannot be undone.";
+        $("#confirmDialog").showModal();
+      }
+      $("#confirmForm").onsubmit = async (event) => {
+        event.preventDefault();
+        const { type, id } = deleteTarget,
+          changes = {};
+        if (type === "tenant") {
+          changes[`tenants/${id}`] = null;
+          store.allocations
+            .filter((item) => item.tenantId === id)
+            .forEach((item) => (changes[`allocations/${item.id}`] = null));
+        }
+        if (type === "room") {
+          if (
+            store.tenants.some(
+              (item) => item.status === "active" && item.roomId === id,
+            )
+          ) {
+            notify("Mark the room tenants as left before deleting this room.");
+            $("#confirmDialog").close();
+            return;
+          }
+          changes[`rooms/${id}`] = null;
+        }
+        await update(ref(db), changes);
+        $("#confirmDialog").close();
+        await load();
+        notify("Deleted.");
+      };
+      load().catch(() => {
+        $("#view").innerHTML =
+          '<div class="panel empty">Paste your Firebase Web App configuration, including databaseURL, then publish the Realtime Database rules.</div>';
+      });
+    </script>
+  </body>
+</html>
