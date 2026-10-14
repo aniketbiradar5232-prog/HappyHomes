@@ -291,6 +291,11 @@
               min="1"
               required /></label
           ><label
+            >Security deposit (same as rent)<input
+              name="securityAmount"
+              type="number"
+              readonly /></label
+          ><label
             >Due day (1-31)<input
               name="dueDateDay"
               type="number"
@@ -328,12 +333,6 @@
               <option value="girls">Girls</option>
             </select></label
           ><label
-            >Capacity<input
-              name="capacity"
-              type="number"
-              min="1"
-              required /></label
-          ><label
             >Base rent<input name="monthlyRent" type="number" min="0"
           /></label>
         </div>
@@ -350,6 +349,7 @@
         </div>
         <input type="hidden" name="paymentId" />
         <div class="two">
+          <label>Tenant<select name="tenantId" required></select></label>
           <label
             >Billing month<select name="billingMonth">
               <option value="1">January</option>
@@ -489,6 +489,7 @@
         );
       let page = "dashboard";
       let renewalAnchor = new Date();
+      let paymentAnchor = new Date();
       let store = {
         tenants: [],
         rooms: [],
@@ -575,11 +576,11 @@
               .filter((tenant) => tenant.gender === gender)
               .map(
                 (tenant) =>
-                  `<tr><td><b>${esc(tenant.name)}</b><br><small>${esc(tenant.tenantCode)}</small></td><td>${esc(tenant.mobile)}</td><td>${money(tenant.monthlyRent)}</td><td>${badge(tenant.status)}</td><td><button class="btn light" data-edit-tenant="${tenant.id}">Edit</button> ${tenant.status === "active" ? `<button class="btn light" data-left="${tenant.id}">Mark left</button> ` : ""}<button class="btn light" data-delete-tenant="${tenant.id}">Remove</button></td></tr>`,
+                  `<tr><td><b>${esc(tenant.name)}</b><br><small>${esc(tenant.tenantCode)}</small></td><td>${esc(tenant.mobile)}</td><td>${money(tenant.monthlyRent)}</td><td>${tenant.securityAmount == null ? "—" : money(tenant.securityAmount)}</td><td>${badge(tenant.status)}</td><td><button class="btn light" data-edit-tenant="${tenant.id}">Edit</button> ${tenant.status === "active" ? `<button class="btn light" data-left="${tenant.id}">Mark left</button> ` : ""}<button class="btn light" data-delete-tenant="${tenant.id}">Remove</button></td></tr>`,
               )
               .join("") ||
-            '<tr><td colspan="5" class="empty">No tenants added.</td></tr>';
-          view.innerHTML = `<div class="panel table-wrap"><div class="top"><h3>Boys tenants</h3><button class="btn" data-add-tenant="boys">+ Add boy</button></div><table class="table"><thead><tr><th>Tenant</th><th>Mobile</th><th>Monthly rent</th><th>Status</th><th>Actions</th></tr></thead><tbody>${tenantTable("boys")}</tbody></table></div><div class="panel table-wrap"><div class="top"><h3>Girls tenants</h3><button class="btn" data-add-tenant="girls">+ Add girl</button></div><table class="table"><thead><tr><th>Tenant</th><th>Mobile</th><th>Monthly rent</th><th>Status</th><th>Actions</th></tr></thead><tbody>${tenantTable("girls")}</tbody></table></div>`;
+            '<tr><td colspan="6" class="empty">No tenants added.</td></tr>';
+          view.innerHTML = `<div class="panel table-wrap"><div class="top"><h3>Boys tenants</h3><button class="btn" data-add-tenant="boys">+ Add boy</button></div><table class="table"><thead><tr><th>Tenant</th><th>Mobile</th><th>Monthly rent</th><th>Security deposit</th><th>Status</th><th>Actions</th></tr></thead><tbody>${tenantTable("boys")}</tbody></table></div><div class="panel table-wrap"><div class="top"><h3>Girls tenants</h3><button class="btn" data-add-tenant="girls">+ Add girl</button></div><table class="table"><thead><tr><th>Tenant</th><th>Mobile</th><th>Monthly rent</th><th>Security deposit</th><th>Status</th><th>Actions</th></tr></thead><tbody>${tenantTable("girls")}</tbody></table></div>`;
           document
             .querySelectorAll("[data-add-tenant]")
             .forEach(
@@ -614,7 +615,7 @@
                   (tenant) =>
                     tenant.status === "active" && tenant.roomId === room.id,
                 ).length;
-                return `<tr><td>${esc(room.roomNumber)}</td><td>${esc(room.floor)}</td><td>${occupied} / ${esc(room.capacity)}</td><td>${money(room.monthlyRent)}</td><td><button class="btn light" data-edit-room="${room.id}">Edit</button> <button class="btn light" data-delete-room="${room.id}">Delete</button></td></tr>`;
+                return `<tr><td>${esc(room.roomNumber)}</td><td>${esc(room.floor)}</td><td>${occupied}</td><td>${money(room.monthlyRent)}</td><td><button class="btn light" data-edit-room="${room.id}">Edit</button> <button class="btn light" data-delete-room="${room.id}">Delete</button></td></tr>`;
               })
               .join("") ||
             '<tr><td colspan="5" class="empty">No rooms added.</td></tr>';
@@ -722,6 +723,20 @@
             render();
           };
         } else if (page === "payments") {
+          const selectedMonth = paymentAnchor.getMonth() + 1,
+            selectedYear = paymentAnchor.getFullYear(),
+            monthPayments = store.payments.filter(
+              (item) =>
+                Number(item.billingMonth) === selectedMonth &&
+                Number(item.billingYear) === selectedYear,
+            ),
+            monthExpenses = store.expenditures.filter((item) => {
+              const date = new Date(`${item.date}T00:00:00`);
+              return (
+                date.getMonth() + 1 === selectedMonth &&
+                date.getFullYear() === selectedYear
+              );
+            });
           const byGender = (list, gender, field) =>
             list
               .filter(
@@ -731,25 +746,40 @@
                       ?.gender) === gender,
               )
               .reduce((sum, item) => sum + Number(item[field] || 0), 0);
-          const boysReceipt = byGender(store.payments, "boys", "amountPaid"),
-            girlsReceipt = byGender(store.payments, "girls", "amountPaid");
-          const boysExpense = byGender(store.expenditures, "boys", "amount"),
-            girlsExpense = byGender(store.expenditures, "girls", "amount");
-          const paymentRows = store.payments
+          const boysReceipt = byGender(monthPayments, "boys", "amountPaid"),
+            girlsReceipt = byGender(monthPayments, "girls", "amountPaid");
+          const boysExpense = byGender(monthExpenses, "boys", "amount"),
+            girlsExpense = byGender(monthExpenses, "girls", "amount");
+          const paymentRows = monthPayments
             .map(
               (item) =>
-                `<tr><td>${esc(item.tenantName)}</td><td>${esc(item.gender || store.tenants.find((tenant) => tenant.id === item.tenantId)?.gender || "-")}</td><td>${esc(item.billingMonth)}/${esc(item.billingYear)}</td><td>${money(item.amountDue)}</td><td>${money(item.amountPaid)}</td><td>${badge(item.status)}</td><td><button class="btn light" data-edit-payment="${item.id}" data-tenant="${item.tenantId}">Edit</button></td></tr>`,
+                `<tr><td>${esc(item.tenantName)}</td><td>${esc(item.gender || store.tenants.find((tenant) => tenant.id === item.tenantId)?.gender || "-")}</td><td>${money(item.amountDue)}</td><td>${money(item.amountPaid)}</td><td>${badge(item.status)}</td><td><button class="btn light" data-edit-payment="${item.id}" data-tenant="${item.tenantId}">Edit</button></td></tr>`,
             )
             .join("");
-          const expenseRows = store.expenditures
+          const expenseRows = monthExpenses
             .map(
               (item) =>
                 `<tr><td>${esc(item.date)}</td><td>${esc(item.gender)}</td><td>${esc(item.description)}</td><td>${money(item.amount)}</td><td>${esc(item.notes || "-")}</td></tr>`,
             )
             .join("");
-          view.innerHTML = `<div class="grid"><div class="card">Boys revenue<b>${money(boysReceipt)}</b><span class="muted">Rent receipts till date</span></div><div class="card">Girls revenue<b>${money(girlsReceipt)}</b><span class="muted">Rent receipts till date</span></div><div class="card">Boys expenditure<b>${money(boysExpense)}</b><span class="muted">Manually recorded</span></div><div class="card">Girls expenditure<b>${money(girlsExpense)}</b><span class="muted">Manually recorded</span></div></div><div class="panel table-wrap"><div class="top"><h3>Monthly payments till date</h3></div><table class="table"><thead><tr><th>Tenant</th><th>Section</th><th>Month</th><th>Amount due</th><th>Receipt</th><th>Status</th><th>Action</th></tr></thead><tbody>${paymentRows || '<tr><td colspan="7" class="empty">No payment records yet.</td></tr>'}</tbody></table></div><div class="panel table-wrap"><div class="top"><h3>Expenditure</h3><button class="btn" id="expenseButton">+ Add expenditure</button></div><table class="table"><thead><tr><th>Date</th><th>Section</th><th>Description</th><th>Expenditure</th><th>Notes</th></tr></thead><tbody>${expenseRows || '<tr><td colspan="5" class="empty">No expenditure added.</td></tr>'}</tbody></table></div>`;
+          view.innerHTML = `<div class="panel"><div class="top"><h3>Rent collection for ${paymentAnchor.toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</h3><div class="actions"><button class="btn light" data-payment-shift="-1">Previous month</button><button class="btn light" data-payment-shift="1">Next month</button><button class="btn" id="recordPaymentButton">+ Record payment</button></div></div></div><div class="grid"><div class="card">Boys rent collected<b>${money(boysReceipt)}</b></div><div class="card">Girls rent collected<b>${money(girlsReceipt)}</b></div><div class="card">Boys expenditure<b>${money(boysExpense)}</b></div><div class="card">Girls expenditure<b>${money(girlsExpense)}</b></div></div><div class="panel table-wrap"><div class="top"><h3>Payments for selected month</h3></div><table class="table"><thead><tr><th>Tenant</th><th>Section</th><th>Amount due</th><th>Receipt</th><th>Status</th><th>Action</th></tr></thead><tbody>${paymentRows || '<tr><td colspan="6" class="empty">No payment records for this month.</td></tr>'}</tbody></table></div><div class="panel table-wrap"><div class="top"><h3>Expenditure for selected month</h3><button class="btn" id="expenseButton">+ Add expenditure</button></div><table class="table"><thead><tr><th>Date</th><th>Section</th><th>Description</th><th>Expenditure</th><th>Notes</th></tr></thead><tbody>${expenseRows || '<tr><td colspan="5" class="empty">No expenditure for this month.</td></tr>'}</tbody></table></div>`;
+          document.querySelectorAll("[data-payment-shift]").forEach(
+            (button) =>
+              (button.onclick = () => {
+                paymentAnchor.setMonth(
+                  paymentAnchor.getMonth() + Number(button.dataset.paymentShift),
+                );
+                render();
+              }),
+          );
+          $("#recordPaymentButton").onclick = () =>
+            openPayment("", "", 0, selectedMonth, selectedYear);
           $("#expenseButton").onclick = () => {
-            $("#expenseForm").date.value = today();
+            $("#expenseForm").date.value =
+              selectedYear === new Date().getFullYear() &&
+              selectedMonth === new Date().getMonth() + 1
+                ? today()
+                : `${selectedYear}-${String(selectedMonth).padStart(2, "0")}-01`;
             $("#expenseDialog").showModal();
           };
           document
@@ -768,23 +798,13 @@
 
       function roomOptions(gender = "", selectedRoomId = "") {
         return store.rooms
-          .filter((room) => {
-            const occupied = store.tenants.filter(
-              (tenant) =>
-                tenant.status === "active" && tenant.roomId === room.id,
-            ).length;
-            return (
-              (!gender || room.gender === gender) &&
-              (room.id === selectedRoomId ||
-                occupied < Number(room.capacity || 0))
-            );
-          })
+          .filter((room) => !gender || room.gender === gender)
           .map((room) => {
             const occupied = store.tenants.filter(
               (tenant) =>
                 tenant.status === "active" && tenant.roomId === room.id,
             ).length;
-            return `<option value="${room.id}" ${room.id === selectedRoomId ? "selected" : ""}>${esc(`${room.gender} - Room ${room.roomNumber} (${occupied}/${room.capacity})`)}</option>`;
+            return `<option value="${room.id}" ${room.id === selectedRoomId ? "selected" : ""}>${esc(`${room.gender} - Room ${room.roomNumber} (${occupied} tenants)`)}</option>`;
           })
           .join("");
       }
@@ -793,6 +813,9 @@
         form.reset();
         form.dataset.tenantId = "";
         form.dataset.originalRoomId = "";
+        form.monthlyRent.oninput = () => {
+          form.securityAmount.value = form.monthlyRent.value;
+        };
         $("#tenantDialog h2").textContent = "Add tenant";
         $("#tenantRoom").innerHTML = roomOptions(gender);
         form.joinDate.value = today();
@@ -812,15 +835,8 @@
           form = event.currentTarget,
           room = store.rooms.find((item) => item.id === data.roomId),
           tenantId = form.dataset.tenantId;
-        const occupied = store.tenants.filter(
-          (item) =>
-            item.status === "active" &&
-            item.roomId === data.roomId &&
-            item.id !== tenantId,
-        ).length;
-        if (!room || occupied >= Number(room.capacity)) {
-          $("#tenantError").textContent =
-            "Select a room with available capacity.";
+        if (!room) {
+          $("#tenantError").textContent = "Select a room.";
           return;
         }
         const changes = {};
@@ -868,6 +884,7 @@
             joinDate: data.joinDate,
             status: "active",
             monthlyRent: Number(data.monthlyRent),
+            securityAmount: Number(data.monthlyRent),
             dueDateDay: Number(data.dueDateDay),
             notes: data.notes || null,
             createdAt: serverTimestamp(),
@@ -888,7 +905,7 @@
           notify(tenantId ? "Tenant updated." : "Tenant added successfully.");
         } catch {
           $("#tenantError").textContent =
-            "Could not save. Check room capacity and database rules.";
+            "Could not save. Check the database rules and try again.";
         }
       };
       $("#roomForm").onsubmit = async (event) => {
@@ -898,7 +915,6 @@
             event.currentTarget.dataset.roomId || push(ref(db, "rooms")).key;
         await update(ref(db, `rooms/${roomId}`), {
           ...data,
-          capacity: Number(data.capacity),
           monthlyRent: Number(data.monthlyRent || 0),
           createdAt: serverTimestamp(),
         });
@@ -907,19 +923,33 @@
         await load();
         notify("Room saved.");
       };
-      function openPayment(paymentId, tenantId, balance) {
+      function openPayment(paymentId, tenantId, balance, billingMonth, billingYear) {
         const form = $("#paymentForm"),
           old = store.payments.find((item) => item.id === paymentId),
-          now = new Date();
+          now = new Date(),
+          selectedTenantId = old?.tenantId || tenantId || store.tenants.find((item) => item.status === "active")?.id || "",
+          selectedTenant = store.tenants.find((item) => item.id === selectedTenantId);
         form.reset();
         form.paymentId.value = paymentId || "";
-        form.dataset.tenantId = tenantId;
+        form.tenantId.innerHTML = store.tenants
+          .filter((item) => item.status === "active" || item.id === selectedTenantId)
+          .map((item) => `<option value="${item.id}">${esc(item.name)} (${esc(item.gender)})</option>`)
+          .join("");
+        form.tenantId.value = selectedTenantId;
         $("#paymentTitle").textContent = old
           ? "Edit payment"
           : "Record payment";
-        form.billingMonth.value = old?.billingMonth || now.getMonth() + 1;
-        form.billingYear.value = old?.billingYear || now.getFullYear();
-        form.amount.value = old?.amountPaid ?? balance;
+        form.billingMonth.value = old?.billingMonth || billingMonth || now.getMonth() + 1;
+        form.billingYear.value = old?.billingYear || billingYear || now.getFullYear();
+        form.amount.value = old?.amountPaid ?? (balance || selectedTenant?.monthlyRent || 0);
+        form.tenantId.onchange = () => {
+          if (!form.paymentId.value) {
+            const changedTenant = store.tenants.find(
+              (item) => item.id === form.tenantId.value,
+            );
+            form.amount.value = changedTenant?.monthlyRent || 0;
+          }
+        };
         form.status.value = old?.status || "paid";
         form.datePaid.value = old?.datePaid || today();
         form.method.value = old?.paymentMethod || "cash";
@@ -931,9 +961,9 @@
         const data = Object.fromEntries(new FormData(event.currentTarget));
         const old = store.payments.find((item) => item.id === data.paymentId),
           tenant = store.tenants.find(
-            (item) => item.id === event.currentTarget.dataset.tenantId,
+            (item) => item.id === data.tenantId,
           );
-        const due = Number(old?.amountDue ?? data.amount),
+        const due = Number(old?.amountDue ?? tenant?.monthlyRent ?? data.amount),
           requested = Number(data.amount),
           unpaid = data.status === "pending" || data.status === "overdue";
         let paid = unpaid ? 0 : requested,
@@ -950,7 +980,7 @@
           return;
         }
         const record = {
-          tenantId: event.currentTarget.dataset.tenantId,
+          tenantId: data.tenantId,
           tenantName: tenant?.name || old?.tenantName || "",
           gender: tenant?.gender || old?.gender || "",
           billingMonth: Number(data.billingMonth),
@@ -1000,7 +1030,6 @@
         form.roomNumber.value = room.roomNumber || "";
         form.floor.value = room.floor || "";
         form.gender.value = room.gender || "boys";
-        form.capacity.value = room.capacity || "";
         form.monthlyRent.value = room.monthlyRent || "";
         $("#roomDialog h2").textContent = "Edit room";
         $("#roomDialog").showModal();
@@ -1017,6 +1046,8 @@
         form.email.value = tenant.email || "";
         form.joinDate.value = tenant.joinDate || today();
         form.monthlyRent.value = tenant.monthlyRent || "";
+        form.securityAmount.value = tenant.securityAmount ?? "";
+        form.monthlyRent.oninput = null;
         form.dueDateDay.value = tenant.dueDateDay || 5;
         form.notes.value = tenant.notes || "";
         $("#tenantError").textContent = "";
